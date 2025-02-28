@@ -3,20 +3,24 @@ title: "0. Introduction"
 output: html_notebook
 ---
 
+# Introduction
 
-<!-- 1. Import yout data stored in a file, database or web -->
+1. Import yout data stored in a file, database or web
 
-<!-- 2. Tidy it: each column is a variable and each row is an observation -->
+2. Tidy it: each column is a variable and each row is an observation
 
-<!-- 3. Transform it: narrowing it down, new variables and calulating summary statistics -->
+3. Transform it: narrowing it down, new variables and calulating summary statistics
 
-<!-- 4. Visualization -->
+4. Visualization
 
-<!-- 5. Models: complementary to visualization -->
+5. Models: complementary to visualization
 
-<!-- 6. Communication -->
+6. Communication
 
-**Install R package**
+
+### Packages
+
+Install R package
 
 ```{r}
 install.packages("tidyverse")
@@ -25,13 +29,15 @@ install.packages("tidyverse")
 ```{r}
 library(tidyverse)
 ```
-**Check updates**
+
+Check updates
 
 ```{r}
 tidyverse_update()
 ```
 
-**Alternative packages used**
+Alternative packages used
+
 ```{r}
 install.packages(
   c("arrow", "babynames", "curl", "duckdb", "gapminder", 

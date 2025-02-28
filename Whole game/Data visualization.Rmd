@@ -1,0 +1,68 @@
+---
+title: "Whole game - Data visualization"
+output: html_notebook
+---
+
+# Whole game
+
+## 1. Data visualization
+
+With ggplot2
+
+```{r}
+# Loading the package
+
+library(tidyverse)
+
+# Data sets we will be using
+
+library(palmerpenguins)
+library(ggthemes)
+```
+
+### Penguins data frame
+
+**Our ultimate job is to display the relationship between flipper lengths and body masses, taking into consideration the species of the penguin**
+
+Variable -> Quantity, quality or property you can measure (variable refers to an attribute that all penguins have) 
+
+ Value -> state of a variable
+
+Oberservation ->  set of measurements made under similar conditions (all atributes of a single penguin) 
+
+Tabular data -> set of values, each associated with a variable and an observation
+
+
+```{r}
+penguins
+```
+
+Variables as columns
+
+```{r}
+glimpse(penguins)
+```
+### Creating a ggplot
+
+- mapping -> how variables are going to be mapped
+
+- aes() -> define x and y axes
+
+- geom -> geometrical object used to represent data
+
+- color (inside of mapping) -> color based on the mapped points
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(x = flipper_length_mm, y = body_mass_g)
+       ) + 
+# geompoint() is a scatterpoint
+  geom_point(mapping = aes(color = species)) +
+  geom_smooth(method = "lm")
+
+```
+
+*As the flipper length increases, so does the body mass. It is failry linear and strong*
+
+
