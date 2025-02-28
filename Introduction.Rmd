@@ -1,0 +1,44 @@
+---
+title: "0. Introduction"
+output: html_notebook
+---
+
+
+<!-- 1. Import yout data stored in a file, database or web -->
+
+<!-- 2. Tidy it: each column is a variable and each row is an observation -->
+
+<!-- 3. Transform it: narrowing it down, new variables and calulating summary statistics -->
+
+<!-- 4. Visualization -->
+
+<!-- 5. Models: complementary to visualization -->
+
+<!-- 6. Communication -->
+
+**Install R package**
+
+```{r}
+install.packages("tidyverse")
+```
+
+```{r}
+library(tidyverse)
+```
+**Check updates**
+
+```{r}
+tidyverse_update()
+```
+
+**Alternative packages used**
+```{r}
+install.packages(
+  c("arrow", "babynames", "curl", "duckdb", "gapminder", 
+    "ggrepel", "ggridges", "ggthemes", "hexbin", "janitor", "Lahman", 
+    "leaflet", "maps", "nycflights13", "openxlsx", "palmerpenguins", 
+    "repurrrsive", "tidymodels", "writexl")
+  )
+```
+
+
