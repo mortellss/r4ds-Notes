@@ -240,3 +240,160 @@ ggplot(diamonds, aes(x = carat)) +
   geom_histogram(bindwidth = 0.01)
 ```
 
+### Visualizing relationships
+
+**Box plot** -> 
+- useful for outliers
+-  Interquartile range: from 25th percentile to 75th percentile
+- Middle of the box is the median (50th percentile)
+- Edge of the box is 1.5 times de IQR
+- Whiskers fo to the farthest non-outlier point in the distribution
+
+```{r}
+ggplot(penguins, aes(x = species, y = body_mass_g)) +
+  geom_boxplot(na.rm = TRUE)
+```
+
+They are similar to density plots
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g, color = species, fill=species)) +
+  geom_density(alpha=0.5, na.rm=TRUE)
+```
+
+**Bar graphs** ->
+
+- For two categorical variables
+
+```{r}
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(na.rm=TRUE)
+```
+
+```{r}
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill")
+```
+
+**Scatterplot** ->
+
+- Visualizes the relationship between two numerical values
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(na.rm=TRUE)
+```
+
+- Can be also used for three or more variables
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = island), na.rm=TRUE)
+```
+
+It can also be divided into facets. THe argument in facets has to be categorical.
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = species), na.rm=TRUE) +
+  facet_wrap(~island)
+```
+
+### Exercises
+
+**The mpg data frame that is bundled with the ggplot2 package contains 234 observations collected by the US Environmental Protection Agency on 38 car models. Which variables in mpg are categorical? Which variables are numerical? (Hint: Type ?mpg to read the documentation for the dataset.) How can you see this information when you run mpg?**
+
+```{r}
+?mpg
+```
+
+Categorical variables in mpg: manufacturer, model, year, trans, drv, fl and class. The rest are numercial.
+
+**ake a scatterplot of hwy vs. displ using the mpg data frame. Next, map a third, numerical variable to color, then size, then both color and size, then shape. How do these aesthetics behave differently for categorical vs. numerical variables?**
+
+```{r}
+ggplot(mpg,
+       aes(x = displ, y = hwy)) +
+geom_point(aes(color=fl), na.rm=TRUE)
+```
+
+
+```{r}
+ggplot(mpg,
+       aes(x = displ, y = hwy)) +
+geom_point(aes(size=fl), na.rm=TRUE)
+```
+
+```{r}
+ggplot(mpg,
+       aes(x = displ, y = hwy)) +
+geom_point(aes(color = fl, size=fl), na.rm=TRUE)
+```
+
+```{r}
+ggplot(mpg,
+       aes(x = displ, y = hwy)) +
+geom_point(aes(shape=fl), na.rm=TRUE)
+```
+
+**In the scatterplot of hwy vs. displ, what happens if you map a third variable to linewidth?**
+
+```{r}
+ggplot(mpg,
+       aes(x = displ, y = hwy)) +
+geom_point(aes(linewidth= cyl), na.rm=TRUE)
+```
+Nothing changes because there is no line to alter
+
+**What happens if you map the same variable to multiple aesthetics?**
+
+```{r}
+ggplot(mpg, aes(x = hwy, y = hwy, color = hwy)) + 
+  geom_point()
+```
+It is good to visualize that variable from multiple perspectives but it is not useful.
+
+**Make a scatterplot of bill_depth_mm vs. bill_length_mm and color the points by species. What does adding coloring by species reveal about the relationship between these two variables? What about faceting by species?**
+
+```{r}
+ggplot(
+  penguins,
+  aes(x = bill_length_mm, y = bill_depth_mm)) +
+    geom_point(aes(color=species), na.rm=TRUE)
+```
+
+The graph shows that as the bill_length_mm increases, the bill_depth_mm increases. THe Adelie species tend to have higher bill depth while Gentoo have longer bill length.
+
+```{r}
+ggplot(
+  penguins,
+  aes(x = bill_length_mm, y = bill_depth_mm)) +
+    geom_point(aes(color=species), na.rm=TRUE) +
+  facet_wrap(~species)
+```
+**Why does the following yield two separate legends? How would you fix it to combine the two legends?**
+
+```{r}
+ggplot(
+  data = penguins,
+  mapping = aes(
+    x = bill_length_mm, y = bill_depth_mm, 
+    color = species, shape = species
+  )
+) +
+  geom_point(na.rm=TRUE) +
+  labs(color = "Species", shape="Species")
+```
+
+**Create the two following stacked bar plots. Which question can you answer with the first one? Which question can you answer with the second one?**
+
+```{r}
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill")
+
+
+ggplot(penguins, aes(x = species, fill = island)) +
+  geom_bar(position = "fill")
+```
+
+The first one answers what is the ratio of species in each one of the islands. And the second one shows from each one of the species what is the ratio of islands
