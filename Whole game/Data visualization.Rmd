@@ -397,3 +397,28 @@ ggplot(penguins, aes(x = species, fill = island)) +
 ```
 
 The first one answers what is the ratio of species in each one of the islands. And the second one shows from each one of the species what is the ratio of islands
+
+### Saving your plots
+
+```{r}
+ggplot(
+  penguins,
+  aes(x = flipper_length_mm, y = body_mass_g)
+) +
+  geom_point()
+ggsave(filename = "penguin-plot.png")
+```
+### Exercises
+
+**Run the following lines of code. Which of the two plots is saved as mpg-plot.png? Why?**
+
+The one saved is the last one (cty and hwy) because it always saves the last one executed
+
+**What do you need to change in the code above to save the plot as a PDF instead of a PNG? How could you find out what types of image files would work in ggsave()?**
+
+To find more about the image file we could execute: ?ggsave()
+
+```{r}
+?ggsave()
+```
+
