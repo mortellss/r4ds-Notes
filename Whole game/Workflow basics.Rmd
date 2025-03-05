@@ -1,0 +1,89 @@
+---
+title: "Workflow basics"
+author: '@mortellss'
+date: "2025-03-05"
+output: html_document
+---
+
+# Workflow: basics
+
+## Coding basics
+
+Creating variables.
+ 
+
+```{r}
+x <- 3 * 4
+x
+```
+Assign a vector with multiple elements
+
+```{r}
+primes <- c(2, 3, 5, 7, 11, 13)
+```
+
+Arithmetics on vectors is applied to every element
+
+```{r}
+primes * 2
+```
+
+## Comments
+
+In the code
+```{r}
+# This is a comment
+```
+
+Use comments to explain the why, not the what or how
+
+## Names
+
+- Separate words with _
+
+```{r}
+ this_is_a_very_long_name <- 2.5
+```
+
+
+- For autocompletion use: Ctrl + TAB
+
+
+## Calling function
+
+```{r}
+seq(from = 1, to = 10)
+```
+
+```{r}
+seq(1, 10)
+```
+
+- When R shows a + character it tells you that they are waiting for you to finish
+
+### Exercises
+
+**Why does this code not work?**
+
+```{r}
+my_variable <- 10
+my_varıable
+#> Error: object 'my_varıable' not found
+```
+
+It does not work because in the second line it uses a 1 instead or an i in the word variable
+
+**Tweak each of the following R commands so that they run correctly:**
+
+
+```{r}
+library(tidyverse)
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+**Press Option + Shift + K / Alt + Shift + K. What happens? How can you get to the same place using the menus?**
+
+It shows you the shortcuts that R has
