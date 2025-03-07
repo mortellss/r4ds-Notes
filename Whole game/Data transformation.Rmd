@@ -1,0 +1,172 @@
+---
+title: "Data transformation"
+author: '@mortellss'
+date: "2025-03-05"
+output: html_document
+---
+
+Sometimes we want to: create new variables, rename ones that exist, reorder observations
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+```
+
+
+The nycflights13 package contains flights departed from NYC in 2013. The data comes from the Bureau of Transportation Statistics. This is a *tibble*. The difference between a tibble and a data frame is that tibbles are designed for large datasets so they only show the first few rows and only the columns that fit on one screen.
+
+To see the data frames:
+ 
+- View(flights) # Open a diffeerent tab with the data frame
+- print(flights, width = Inf)  # To see all columns
+- glimpse()
+
+
+
+```{r}
+flights
+```
+
+```{r}
+?flights
+```
+
+### Rows
+
+filter() -> changes which rows are present without changing their order
+arrange() -> changes the order of rows without changing which are present
+distinct() -> find rows with unique values
+
+**filter()**
+
+Changes the rows that are present without chaning their order
+
+```{r}
+# Flights that departed more than 120 minutes late
+flights |>
+  filter(dep_delay > 120)
+
+# This is the same as:
+# filter(flights, dep_delay > 120)
+```
+
+```{r}
+# Flights that departed on January 1
+flights |>
+  filter(month == 1 & day == 1)
+
+# Flights that departed on January or February
+
+flights |>
+  filter(month == 1 | month == 2)
+
+# Another way is: 
+# flights |>
+#   filter(month %in% c(1, 2))
+
+
+# You can also save it in a variable
+
+jan1 <- flights |>
+  filter(month == 1 & day == 1)
+
+
+```
+
+**arrange()**
+
+Changes the order of rows based on the value of the columns.
+
+```{r}
+# This is in ascending order
+
+flights |>
+  arrange(year, month, day, dep_time)
+
+# Descending order.
+# ! Only allows one argument
+
+flights |>
+  arrange(desc(dep_time))
+```
+**distinct()**
+
+Find all unique rows in dataet.
+
+```{r}
+flights |>
+  distinct()
+
+# Find all unique origin and destination pairs
+# Just prints a table with that unique pairs
+flights |> 
+  distinct(origin, dest)
+
+
+# .keep_all = TRUE
+# 	Prints the table with those unique pairs but shows the entirety of the column
+
+flights |>
+  distinct(origin, dest, .keep_all = TRUE)
+```
+
+```{r}
+# Find the number of ocurrences in that distinct
+# The sort = TRUE, sorts it in descendent order
+
+flights |>
+  count(origin, dest, sort = TRUE)
+```
+
+### Exercises
+
+**n a single pipeline for each condition, find all flights that meet the condition: **
+
+```{r}
+# Had an arrival delay of two or more hours
+
+flights |>
+  filter(arr_delay >= 120) |>
+  arrange(desc(arr_delay))
+
+# Flew to Houston (IAH or HOU).
+
+flights |>
+  filter(dest %in% c("IAH", "HOU"))
+
+# Were operated by United, American, or Delta.
+
+flights |>
+  filter(carrier %in% c("UA", "AA", "DL"))
+
+# Departed in summer (July, August, and September).
+
+flights |>
+  filter(month %in% c(7, 8, 9))
+
+# Arrived more than two hours late but didn’t leave late.
+# The view() opens up another tab with the dataset
+
+flights |> 
+  filter(arr_delay >= 120 & dep_delay <= 0) |> view()
+
+# Were delayed by at least an hour, but made up over 30 minutes in flight
+
+flights |>
+  filter(dep_delay >= 60
+         & (time_hour - air_time > 30))
+```
+
+
+**Sort flights to find the flights with the longest departure delays. Find the flights that left earliest in the morning.**
+
+```{r}
+flights |> 
+  arrange(desc(dep_delay)) |>
+  arrange(sched_dep_time) |>
+  relocate(dep_delay, sched_dep_time)
+  
+```
+
+The one with the longest departure delay
+
