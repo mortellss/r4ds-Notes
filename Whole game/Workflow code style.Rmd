@@ -1,0 +1,63 @@
+---
+title: "Workflow code style"
+author: '@mortellss'
+date: "2025-03-11"
+output: html_document
+---
+
+# Workflow: code style
+
+```{r}
+install.packages("styler")
+```
+## Names
+
+- Use lowercase letter, numbers and _
+- It is better to use long, descriptive names
+- The short ones are easy but are not descriptive.
+
+## Spaces
+
+- Put spaces on either side of mathematical operators apart from ^ (i.e. +, -, ==, <, …), and around the assignment operator
+- Always put a space after a comma, just like in standard English.
+- It's okay to add extra space
+
+## Pipes
+- Should always have a space before it and should typically be the last thing on a line
+- If a function has several arguments, put each one of them on its own line
+
+## Sectioning comments
+
+Section to break up your file
+
+### Exercise
+
+**Restyle the following pipelines following the guidelines above.**
+
+```{r}
+flights |>
+  filter(dest == "IAH") |> 
+  group_by(year, month, day)|>
+  summarize(n = n(),
+  delay = mean(arr_delay, na.rm = TRUE)) |>
+  filter(n > 10)
+```
+
+```{r}
+flights |>
+  filter(carrier == "UA",
+  dest %in% c("IAH", "HOU"),
+  sched_dep_time > 0900,
+  sched_arr_time < 2000) |>
+  group_by(flight) |>
+  summarize(
+    delay = mean(
+      arr_delay, 
+      na.rm=TRUE),
+    cancelled = sum(is.na(arr_delay)),
+    n=n()
+  ) |>
+  filter(n > 10)
+```
+
+

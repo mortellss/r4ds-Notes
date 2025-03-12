@@ -31,7 +31,7 @@ flights
 ?flights
 ```
 
-### Rows
+## Rows
 
 filter() -> changes which rows are present without changing their order
 arrange() -> changes the order of rows without changing which are present
@@ -118,9 +118,18 @@ flights |>
   count(origin, dest, sort = TRUE)
 ```
 
+**mutate()**
+
+Creates a new variable
+
+**nrow()**
+
+Counts the number of rows in a dataset
+
+
 ### Exercises
 
-**n a single pipeline for each condition, find all flights that meet the condition: **
+**In a single pipeline for each condition, find all flights that meet the condition: **
 
 ```{r}
 # Had an arrival delay of two or more hours
@@ -168,5 +177,509 @@ flights |>
   
 ```
 
-The one with the longest departure delay
+**Sort flights to find the fastest flights. (Hint: Try including a math calculation inside of your function.)**
+
+```{r}
+flights |>
+  mutate(speed = distance / (air_time / 60)) |>
+  arrange(desc(speed)) |>
+  relocate(speed)
+```
+
+**Was there a flight on every day of 2013?**
+
+```{r}
+flights |>
+  count(year, month, day) |>
+  nrow()
+```
+**Which flights traveled the farthest distance? Which traveled the least distance?**
+
+The longest distance
+
+```{r}
+flights |>
+  arrange(desc(distance)) |>
+  relocate(distance)
+```
+
+The shortest distance
+
+```{r}
+flights |>
+  arrange(distance) |>
+  relocate(distance)
+```
+
+**Does it matter what order you used filter() and arrange() if you’re using both? Why/why not? Think about the results and how much work the functions would have to do.**
+
+It does not matter the order.
+
+## Column
+
+**mutate()**
+
+Adds new columns that are calculated from the existing columns
+
+```{r}
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60
+  ) |>
+  relocate(gain, speed)
+
+# This is the same as using the relocate 
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .before = 1
+  )
+
+```
+
+
+We can also use the .after to add after a variable. So in the next examples the new variables gain and speed go after the variable day
+
+```{r}
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .after = day
+  )
+```
+
+THe argument .used only keeps those variables involved in the mutate() step. The next example will only show: gain, hours, gain_per_hou, dep_delay, arr_delay and air_time
+
+```{r}
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    hours = air_time / 60,
+    gain_per_hour = gain / hours,
+    .keep = "used"
+  )
+```
+
+**When we mutuate, the changes made are not stored in the data frame**
+
+
+**select()**
+
+Only shows those columns
+
+```{r}
+flights |>
+  select(year, month, day)
+```
+
+Now,those between the two variables indicated (invlusively)
+
+```{r}
+flights |> 
+  select(year:day)
+```
+
+Now all of them except the ones indicates (inclusively)
+
+```{r}
+flights |> 
+  select(!year:day)
+```
+
+Select all aocumns that are character
+
+```{r}
+flights |>
+  select(where(is.character))
+```
+
+Or other functions you can use within select():
+- starts_with("abc")
+- ends_with("xyz")
+- contains("ijk")
+- num_range("x", 1:3)
+- matches()
+
+You can also rename variables as you select:
+
+```{r}
+flights |> 
+  select(tail_num = tailnum)
+```
+
+
+**rename()**
+
+The rename method in select only shows you that specific column but with the rename function it keeps all the existing variables
+
+```{r}
+flights |> 
+  rename(tail_num = tailnum)
+```
+
+**relocate()**
+
+Moves certain variables to the front
+
+```{r}
+flights |> 
+  relocate(time_hour, air_time)
+```
+
+You can also combine the .after and .before with this function
+
+```{r}
+# Relocates are the variables from year to dep_time after time_hour
+flights |> 
+  relocate(year:dep_time, .after = time_hour)
+
+# Relocates all those variables starting with "arr" after dep_time
+
+flights |> 
+  relocate(starts_with("arr"), .before = dep_time)
+```
+
+### Exercises
+
+**Compare dep_time, sched_dep_time, and dep_delay. How would you expect those three numbers to be related?**
+
+```{r}
+flights |> 
+  select(dep_time, sched_dep_time, dep_delay)
+```
+
+Dep_time is sched_dep_time + dep_delay
+
+**Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.**
+
+```{r}
+flights |>
+  select(dep_time, dep_delay, arr_time, arr_delay)
+
+flights |>
+  select(starts_with("dep") & starts_with("arr"))
+
+flights |> 
+  select(dep_time:arr_delay, -contains("sched"))
+```
+
+
+**What happens if you specify the name of the same variable multiple times in a select() call?**
+
+```{r}
+flights |>
+  select(dep_time, dep_time, dep_time)
+```
+
+
+IF you specify the name multiple times it does not affect and only prints the column once.
+
+**What does the any_of() function do? Why might it be helpful in conjunction with this vector?**
+
+```{r}
+?any_of()
+```
+
+Any of does this "any_of() doesn't check for missing variables. It is especially useful with negative selections, when you would like to make sure a variable is removed.".
+
+You can check if there are any of the arguments specified in any place.
+
+```{r}
+variables <- c("year", "month", "day", "dep_delay", "arr_delay")
+
+flights |>
+  select(any_of(variables))
+```
+
+**Does the result of running the following code surprise you? How do the select helpers deal with upper and lower case by default? How can you change that default?**
+
+```{r}
+flights |> select(contains("TIME"))
+
+# to change this behaviour of ignoring the upper/lower
+
+flights |>
+  select(contains("TIME", ignore.case = FALSE))
+```
+It does suprise me because usually the upper case/lower case are not ignored, and it is a very important aspect. But in this case, the contains ignores it
+
+**Rename air_time to air_time_min to indicate units of measurement and move it to the beginning of the data frame.**
+
+```{r}
+flights |>
+  rename(air_time_min = air_time) |>
+  select(air_time_min)
+```
+
+**Why doesn’t the following work, and what does the error mean?**
+
+```{r}
+flights |> 
+  select(tailnum) |> 
+  arrange(arr_delay)
+#> Error in `arrange()`:
+#> ℹ In argument: `..1 = arr_delay`.
+#> Caused by error:
+#> ! object 'arr_delay' not found
+```
+
+If you select just one column then you cannot arrange based on the variable that is not specified in that select()
+
+## The pipe
+
+THe pipe is like a nested function.
+
+Previously, the pipe was %>% and not |>
+
+## Groups
+
+**group_by()**
+
+Group into datasets
+It is only visual when you do something else after the group_by
+
+```{r}
+flights |>
+  group_by(month)
+```
+
+**summarize()**
+
+This reduces the data frame to single row
+
+```{r}
+flights |>
+  group_by(month) |>
+  summarize(avg_delay = mean(dep_delay, na.rm = TRUE),
+            n = n())
+
+# n() returns the number of rows in each group
+```
+
+**slice_functions()**
+
+slide_head(n = 1) # takes the first row from each group
+slide_tail(n = 1) # takes the last row in each group
+slide_min(x, n = 1) # takes the row with the smallest value of column x
+slide_max(x, n = 1) #  takes the row with the largest value of column x
+slide_sample(n = 1) # takes one random row
+
+Instead of n you can use prop = 0.1 to select the 10% of the rows
+
+Find the flights that are most delayed upon arrival at each destination
+```{r}
+# The with_ties = FALSE means that the program will just returns one row per group
+flights |>
+  group_by(dest) |>
+  slice_max(arr_delay, n = 1, with_ties = FALSE) |>
+  relocate(dest)
+```
+
+**Grouping by the multiple variables**
+
+Creating groups with more than one variable
+
+```{r}
+daily <- flights |>
+  group_by(year, month, day)
+```
+
+When you summarize a tibble grouped by more than one variable, each summary peels off the last group.
+
+```{r}
+daily_flights <- daily |> 
+  summarize(n = n())
+
+# to supress the message
+# daily_flights <- daily |> 
+#  summarize(
+#    n = n(), 
+#    .groups = "drop_last"
+#  )
+```
+
+**Ungrouping**
+
+```{r}
+daily |>
+  ungroup()
+```
+
+**.by**
+
+Can be used to group the same way
+
+```{r}
+
+# Group a variable
+flights |> 
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE), 
+    n = n(),
+    .by = month
+  )
+
+# Or group by multiple variable
+flights |> 
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE), 
+    n = n(),
+    .by = c(origin, dest)
+  )
+```
+
+### Exercise
+
+**Which carrier has the worst average delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about flights |> group_by(carrier, dest) |> summarize(n()))**
+
+```{r}
+flights |>
+  group_by(carrier, dest) |>
+  summarize(delay = mean(dep_delay, na.rm = TRUE), n=n()) |>
+  arrange(desc(delay))
+```
+
+
+**Find the flights that are most delayed upon departure from each destination.**
+
+```{r}
+# Shows the top 1 most departure delayed flights from each destination
+
+flights |>
+  group_by(dest) |>
+  arrange(dest, desc(dep_delay)) |>
+  slice_head(n = 1) |>
+  relocate(dest, dep_delay)
+```
+
+**How do delays vary over the course of the day? Illustrate your answer with a plot.**
+
+```{r}
+
+delays_day <- flights |>
+  group_by(hour) |>
+  summarize(avg_delay = mean(dep_delay, na.rm = TRUE))
+
+ggplot(delays_day, 
+       aes(x = hour, y = avg_delay)) +
+  geom_smooth(na.rm = TRUE)
+```
+
+**What happens if you supply a negative n to slice_min() and friends?**
+
+```{r}
+flights |>
+  group_by(dest) |>
+  slice_max(arr_delay, n = 1) |>
+  relocate(arr_delay)
+```
+
+Using a negative value arranges the data frame in ascending or desensding order
+
+**Explain what count() does in terms of the dplyr verbs you just learned. What does the sort argument to count() do?**
+
+The count() counts the number of ibservations in each group, setting the sort argument to TRUE and arranges the categories in descending order.
+
+**Suppose we have the following tiny data frame:**
+
+```{r}
+df <- tibble(
+  x = 1:5,
+  y = c("a", "b", "a", "a", "b"),
+  z = c("K", "K", "L", "L", "K")
+)
+```
+
+**Write down what you think the output will look like, then check if you were correct, and describe what group_by() does.**
+
+```{r}
+df |>
+  group_by(y)
+```
+
+The output will be 5 different groups with 1, K. 2, K. 3, L...
+
+**Write down what you think the output will look like, then check if you were correct, and describe what arrange() does. Also, comment on how it’s different from the group_by() in part (a).**
+
+```{r}
+df |>
+  arrange(y)
+```
+
+This puts all a's first, with its corresponding values of x and z and then all the b's. It is different from the group_by() because there are no groups here
+
+**Write down what you think the output will look like, then check if you were correct, and describe what the pipeline does.**
+
+```{r}
+df |>
+  group_by(y) |>
+  summarize(mean_x = mean(x))
+```
+
+It separates in two groups of y (a and b) and it shows just the new variable called mean_x
+
+```{r}
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x))
+```
+
+This creates the different groups that y and z can make: (a, K), (a, L) and (b, K) and the column called mean_x
+
+```{r}
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x), .groups = "drop")
+```
+
+It does the same thing just that it specifies that it just wants to show those variables that are used in the function
+
+```{r}
+df |>
+  group_by(y, z) |>
+  summarize(mean_x = mean(x))
+
+df |>
+  group_by(y, z) |>
+  mutate(mean_x = mean(x))
+```
+
+The second one creates a new variable called mean_x. The difference between btoh is that the first only shows: y, z and mean_x and the second one shows also x
+
+## Case study
+
+Objective: l compare what proportion of times a player gets a hit (H) vs. the number of times they try to put the ball in play (AB)
+
+```{r}
+batters <- Lahman::Batting |> 
+  group_by(playerID) |> 
+  summarize(
+    performance = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),
+    n = sum(AB, na.rm = TRUE)
+  )
+batters
+```
+
+Now we plot the values
+
+```{r}
+batters |> 
+  filter(n > 100) |> 
+  ggplot(aes(x = n, y = performance)) +
+  geom_point(alpha = 1 / 10) + 
+  geom_smooth(se = FALSE)
+```
+
+With this we draw several conclusions: the variation in performance is larger with fewer opportunities to hit the ball and also that there's a positive correlation between performance and opportunities.
+
+```{r}
+batters |> 
+  filter(n > 100) |> 
+  ggplot(aes(x = n, y = performance)) +
+  geom_point(alpha = 1 / 10) + 
+  geom_smooth(se = FALSE)
+```
 

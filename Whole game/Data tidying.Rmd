@@ -1,0 +1,102 @@
+---
+title: "Data tidying"
+author: '@mortellss'
+date: "2025-03-11"
+output: html_document
+---
+
+# Data tidying
+
+Primary tool: pivoting
+
+```{r}
+library(tidyverse)
+```
+
+**Rules to make a dataset tidy:**
+
+1. Each variable is a column; each column is a variable.
+2. Each observation is a row; each row is an observation.
+3. Each value is a cell; each cell is a single value.
+
+### Exercises
+
+**For each of the sample tables, describe what each observation and each column represents.**
+
+The first table, each obersvation represents the cases of tuberculosis in a country and year. The first observation is Afghanistan in 1999 the number of cases and the population that year and the rate, which is cases/population. In the second table, each bservation represents the cases in a different year.
+
+**Sketch out the process you’d use to calculate the rate for table2 and table3. You will need to perform four operations: Extract the number of TB cases per country per year.Extract the matching population per country per year. Divide cases by population, and multiply by 10000. Store back in the appropriate place.**
+
+First, separate in cases and population, make them a column and the value is the count shown to the right.Regarding table3 you ned to get the rate and extract the cases (which is the numerator) and the population (which is the denominator)
+
+
+## Lengthening data
+
+**pivot_longer()**
+
+Makes the names of the columns, values in a cell.
+
+Example: there were many column names called from wk1 to wk76 and its values were of the rank that the song took in each one of the weeks
+```{r}
+billboard |> 
+  pivot_longer(
+    # specifies which column has to be pivoted
+    cols = starts_with("wk"), 
+    # name the variable that will be the title of that colum
+    names_to = "week", 
+    # names the variable stored in the cell values
+    values_to = "rank",
+    # to elimiate those rows which value for wkX is NA
+    values_drop_na = TRUE
+  ) |>
+  mutate(
+    # make the column week an integer column
+    week = parse_number(week)
+  )
+```
+
+**Do it yourself 1**
+```{r}
+df <- tribble(
+  ~id,  ~bp1, ~bp2,
+   "A",  100,  120,
+   "B",  140,  115,
+   "C",  120,  125
+)
+
+# Pivot to make it easier to read
+
+df |>
+  pivot_longer(
+    # cols = contains("bp"),
+    cols = bp1:bp2
+    names_to = "measurement",
+    values_to = "values"
+  ) |>
+  mutate(
+    measurement = parse_number(measurement)
+  )
+
+
+```
+
+**Example**
+
+the who2 tibble includes the name of the type of diagnosis, the gender and the age range.
+
+```{r}
+who2 |>
+  pivot_longer(
+    cols = !(country:year),
+    names_to = c("diagnosis", "gender", "age"),
+    names_sep = "_",
+    values_to = "count"
+  )
+```
+
+**Example**
+
+```{r}
+household
+```
+
