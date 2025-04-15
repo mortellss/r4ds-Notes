@@ -1,0 +1,54 @@
+---
+title: "Workflow scripts and projects"
+author: '@mortellss'
+date: "2025-04-15"
+output: html_document
+---
+
+# Scripts
+
+R script -> Ctrl + Shift + N
+
+It is great to write your code and try it.
+
+Execute the entirety of the code -> Ctrl + Shift + Enter
+
+Execute part of the code -> Ctrl + Enter
+
+```{r}
+library(dplyr)
+library(nycflights13)
+
+not_cancelled <- flights |> 
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+
+not_cancelled |> 
+  group_by(year, month, day) |> 
+  summarize(mean = mean(dep_delay))
+```
+
+
+## Saving and naming
+
+- File names should be machine readable: avoid spaces, symbols, and special characters.
+- File names should be human readable: use file names to describe what’s in the file.
+- File names should play well with default ordering: start file names with numbers so that alphabetical sorting puts them in the order they get used.
+
+# Projects
+
+To handle these real life situations, you need to make two decisions:
+
+1. What is the source of truth? What will you save as your lasting record of what happened?
+  - Source of truth should be R scripts
+
+2. Where does your analysis live?
+
+
+Other keyboard shortcuts
+ - Ctrl + Shift + 0 -> Restart R
+ - Ctrl + Shift + S -> Re-run the current script
+
+
+The best way to store all the projects is in the RStudio Projects
+
+Never use absolute paths in the scripts

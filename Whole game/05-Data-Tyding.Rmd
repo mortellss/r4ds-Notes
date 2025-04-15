@@ -100,3 +100,53 @@ who2 |>
 household
 ```
 
+```{r}
+household |>
+  pivot_longer(
+    cols = !family,
+    names_to = c(".value", "child"),
+    names_sep = "_",
+    values_drop_na = TRUE
+  )
+```
+
+```{r}
+cms_patient_experience |>
+  pivot_wider(
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+  
+```
+
+```{r}
+cms_patient_experience |>
+  pivot_wider(
+    id_cols = starts_with("org"),
+    names_from = measure_cd,
+    values_from = prf_rate
+  )
+  
+```
+
+*Example*
+
+```{r}
+df <- tribble(
+  ~id, ~measurement, ~value,
+  "A",        "bp1",    100,
+  "B",        "bp1",    140,
+  "B",        "bp2",    115, 
+  "A",        "bp2",    120,
+  "A",        "bp3",    105
+)
+```
+
+```{r}
+df |>
+  pivot_wider(
+    names_from = "measurement",
+    values_from = "value"
+  )
+```
+
